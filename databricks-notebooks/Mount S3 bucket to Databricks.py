@@ -37,8 +37,8 @@ aws_keys_df = spark.read.format(file_type)\
 
 # COMMAND ----------
 
-# Cell for debugging - DO NOT COMMIT!
-display(aws_keys_df)
+# Cell for debugging
+# display(aws_keys_df)
 
 # COMMAND ----------
 
@@ -59,10 +59,10 @@ ENCODED_SECRET_KEY = urllib.parse.quote(string=SECRET_KEY, safe="")
 
 # COMMAND ----------
 
-# Cell for debugging - DO NOT COMMIT!
+# Cell for debugging
 # print(ACCESS_KEY)
-print(SECRET_KEY)
-print(ENCODED_SECRET_KEY)
+# print(SECRET_KEY)
+# print(ENCODED_SECRET_KEY)
 
 # COMMAND ----------
 
@@ -86,9 +86,7 @@ dbutils.fs.mount(SOURCE_URL, MOUNT_NAME)
 
 # COMMAND ----------
 
-# Cell for debugging
-# print(SOURCE_URL)
-
+# Cell for debugging  - verify mount is listed
 data = []
 for mount in dbutils.fs.ls("/mnt"):
     if "12e37" in mount.name:
@@ -102,35 +100,16 @@ for mount in dbutils.fs.ls("/mnt"):
 
 # COMMAND ----------
 
-# display(dbutils.fs.ls("/mnt/"))
 display(dbutils.fs.ls("/mnt/pinterest_data_s3_12e37/topics/"))
 
 # COMMAND ----------
 
+# Cell for debugging
 # dbutils.fs.unmount("/mnt/pinterest_data_s3_12e37")
 
 # COMMAND ----------
 
-# File location and type
-# Asterisk(*) indicates reading all the content of the specified file that have .json extension
-file_location = "/mnt/pinterest_data_s3_12e37/topics/12e371d757c1.geo/partition=0/*.json" 
-file_type = "json"
-# Ask Spark to infer the schema
-infer_schema = "true"
-# Read in JSONs from mounted S3 bucket
-df = spark.read.format(file_type) \
-.option("inferSchema", infer_schema) \
-.load(file_location)
-# Display Spark dataframe to check its content
-display(df)
-
-# COMMAND ----------
-
-type(df)
-
-# COMMAND ----------
-
-# Build file_location = "/mnt/pinterest_data_s3_12e37/topics/12e371d757c1.geo/partition=0/*.json" 
+# Sample file_location = "/mnt/pinterest_data_s3_12e37/topics/12e371d757c1.geo/partition=0/*.json" 
 
 def read_data(path):
     file_type = "json"
@@ -161,22 +140,6 @@ df_user = read_data(path_to_topics + aws_iam_username + "." + "user" + "/partiti
 
 # COMMAND ----------
 
-# def read_topics_data(path:str, aws_iam_username:str, topics:list):
-#     file_type = "json"
-        
-#     for i in range(len(topics)):
-#         url = path + aws_iam_username + "." + topics[i] + "/partition=0/*.json"
-#         exec(f'df_{topics[i]} = spark.read.format("json").option("inferSchema", True).load({url})')
-
-# COMMAND ----------
-
-# path_to_topics = "/mnt/pinterest_data_s3_12e37/topics/"
-# aws_iam_username = "12e371d757c1"
-# topics = ['pin', 'geo', 'user']
-# read_topics_data(path_to_topics, aws_iam_username, topics)
-
-# COMMAND ----------
-
 display(df_pin)
 
 # COMMAND ----------
@@ -186,7 +149,3 @@ display(df_geo)
 # COMMAND ----------
 
 display(df_user)
-
-# COMMAND ----------
-
-
