@@ -6,34 +6,18 @@ import boto3
 import json
 import sqlalchemy
 from sqlalchemy import text
+from database_utils import AWSDBConnector
 
 
 random.seed(100)
 
-
-class AWSDBConnector:
-
-    def __init__(self):
-
-        self.HOST = ""
-        self.USER = 'project_user'
-        self.PASSWORD = ''
-        self.DATABASE = 'pinterest_data'
-        self.PORT = 3306
-        
-    def create_db_connector(self):
-        engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
-        return engine
-
-
-new_connector = AWSDBConnector()
-
+aws_dbconnector = AWSDBConnector("db_creds.yaml")
 
 def run_infinite_post_data_loop():
     while True:
         sleep(random.randrange(0, 2))
         random_row = random.randint(0, 11000)
-        engine = new_connector.create_db_connector()
+        engine = aws_dbconnector.create_db_connector()
 
         with engine.connect() as connection:
 
