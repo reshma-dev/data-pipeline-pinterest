@@ -13,8 +13,8 @@ random.seed(100)
 
 aws_dbconnector = AWSDBConnector("db_creds.yaml")
 
-def fetch_random_row(table_name:str):
-    """Fetch a random row from the table
+def fetch_row(table_name:str, offset:int):
+    """Fetch a row from the table at the given `offset`
 
     Arguments:    
         table_name -- str
@@ -22,7 +22,7 @@ def fetch_random_row(table_name:str):
     Returns:
         data as `dict`
     """
-    sql = text(f"SELECT * FROM {table_name} LIMIT 1 OFFSET {random.randint(0, 11000)}")
+    sql = text(f"SELECT * FROM {table_name} LIMIT 1 OFFSET {offset}")
     
     engine = aws_dbconnector.create_db_connector()
     with engine.connect() as connection:
@@ -38,9 +38,10 @@ def fetch_post_data():
     geolocation_data  - contains data about the geolocation of each Pinterest post found in pinterest_data
     user_data         - contains data about the user that has uploaded each post found in pinterest_data
     """
-    pin_result = dict(fetch_random_row(table_name="pinterest_data"))
-    geo_result = dict(fetch_random_row(table_name="geolocation_data"))
-    user_result = dict(fetch_random_row(table_name="user_data"))
+    random_row = random.randint(0, 11000)
+    pin_result = dict(fetch_row(table_name="pinterest_data", offset=random_row))
+    geo_result = dict(fetch_row(table_name="geolocation_data", offset=random_row))
+    user_result = dict(fetch_row(table_name="user_data", offset=random_row))
     
     return pin_result, geo_result, user_result
 
@@ -98,10 +99,8 @@ def run_infinite_post_data_loop():
 
 
 if __name__ == "__main__":
-    print('Working')
-    run_infinite_post_data_loop()
-    
-    # # Fetch only once for testing
-    # from pprint import pprint
-    # pprint(fetch_post_data(), sort_dicts=False)
-    # send_one_post()
+    print('Working...')
+    # run_infinite_post_data_loop()
+    # Send 1100 records for controlled cleaning verification
+    for _ in range(1100):
+        send_one_post()
