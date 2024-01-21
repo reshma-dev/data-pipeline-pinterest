@@ -1,5 +1,6 @@
 import sqlalchemy
-
+from sqlalchemy import text
+import random
 import yaml
 
 class AWSDBConnector:
@@ -29,3 +30,36 @@ class AWSDBConnector:
         """
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
+    
+
+    def fetch_row(self, table_name:str, offset:int):
+        """Fetch a row from the table at the given `offset`
+
+        Arguments:    
+            table_name -- str
+                Name of the table to extract a data row from
+        Returns:
+            data as `dict`
+        """
+        sql = text(f"SELECT * FROM {table_name} LIMIT 1 OFFSET {offset}")
+        
+        engine = self.create_db_connector()
+        with engine.connect() as connection:
+            selected_rows = connection.execute(sql)
+        
+        return selected_rows.first()._mapping
+
+
+    def fetch_post_data(self):
+        """
+        Fetch and return 1 row from all 3 tables
+        pinterest_data    - contains data about posts being updated to Pinterest
+        geolocation_data  - contains data about the geolocation of each Pinterest post found in pinterest_data
+        user_data         - contains data about the user that has uploaded each post found in pinterest_data
+        """
+        random_row = random.randint(0, 11000)
+        pin_result = dict(self.fetch_row(table_name="pinterest_data", offset=random_row))
+        geo_result = dict(self.fetch_row(table_name="geolocation_data", offset=random_row))
+        user_result = dict(self.fetch_row(table_name="user_data", offset=random_row))
+        
+        return pin_result, geo_result, user_result
