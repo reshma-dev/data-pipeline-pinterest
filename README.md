@@ -3,12 +3,13 @@ Stream and batch data processing pipeline for ML systems hosted on AWS
 
 - [Pinterest Data Pipeline](#pinterest-data-pipeline)
   - [Project brief](#project-brief)
+  - [Architecture diagram - Pinterest Pipeline built on AWS](#architecture-diagram---pinterest-pipeline-built-on-aws)
   - [Setup](#setup)
     - [Emulation data](#emulation-data)
     - [Batch Processing](#batch-processing)
-  - [Architecture diagram - Pinterest Pipeline built on AWS](#architecture-diagram---pinterest-pipeline-built-on-aws)
   - [Batch Processing in Databricks](#batch-processing-in-databricks)
   - [Databricks Workloads orchestration](#databricks-workloads-orchestration)
+  - [Stream processing](#stream-processing)
   - [Delta Tables can be viewed in the Catalog in Databricks](#delta-tables-can-be-viewed-in-the-catalog-in-databricks)
     - [For example, the columns for the Delta table for pin](#for-example-the-columns-for-the-delta-table-for-pin)
     - [Sample data in the geo table](#sample-data-in-the-geo-table)
@@ -17,6 +18,10 @@ Stream and batch data processing pipeline for ML systems hosted on AWS
 
 ## Project brief
 Pinterest has world-class machine learning engineering systems. They have billions of user interactions such as image uploads or image clicks which they need to process every day to inform the decisions to make. Brief of this project was to build the system in the cloud that takes in those events and runs them through two separate pipelines. One for computing real-time metrics (like profile popularity, which would be used to recommend that profile in real-time), and another for computing metrics that depend on historical data (such as the most popular category this year).
+
+
+## Architecture diagram - Pinterest Pipeline built on AWS
+![PinterestCloudPipelineArchitectureDiagram](/media/CloudPinterestPipelineArchitecture.png)
 
 
 ## Setup
@@ -45,10 +50,6 @@ An Amazon EC2 instance in the us-east-1 region is used as an Apache Kafka client
   
   JSONs in the patition for topic `geo`
   ![Data files for geo](/media/jsons_for_topic_geo.png)  
-
-
-## Architecture diagram - Pinterest Pipeline built on AWS
-![PinterestCloudPipelineArchitectureDiagram](/media/CloudPinterestPipelineArchitecture.png)
 
 
 ## Batch Processing in Databricks
