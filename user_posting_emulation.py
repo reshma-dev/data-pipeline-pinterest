@@ -22,6 +22,18 @@ class PostingEmulation(ABC):
         pass
 
     def send_data(self, data, destination):
+        """Send data to a specific destination.
+
+        Arguments:
+            data (dict): The data to be sent.
+            destination (str): The destination identifier - data stream or kafka topic.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         payload = self.prepare_payload(data, destination)
 
         url = self.invoke_url_template.format(destination=destination)
@@ -33,7 +45,7 @@ class PostingEmulation(ABC):
             print(f"Data sent to {destination}")
 
     def send_one_post(self):
-        """Fetch data from the 3 tables on the RDS instance and
+        """Fetch data from the 3 tables on the RDS instance (user, geo, pin) and
         send it to the corresponding Data streams on Kinesis or topics on the MSK
         """
         for data, destination in zip(aws_dbconnector.fetch_post_data(), self.destination_list):
@@ -49,7 +61,7 @@ class PostingEmulation(ABC):
 
 
     def send_posts(self, count):
-        """Simulate sending `count` posts on Pinterest
+        """Simulate sending `count` number of randomly picked posts on Pinterest
         """
         for _ in range(count):
             sleep(random.randrange(0, 2))
@@ -92,9 +104,20 @@ class StreamEmulation(PostingEmulation):
         }, default=lambda d: d.isoformat())  # convert datetime to serializable isoformat
 
 
+import threading
+
 if __name__ == "__main__":
     b = BatchEmulation()
-    b.send_posts(1)
-
     s = StreamEmulation()
-    s.send_posts(1)
+
+    # Create threads for batch and stream emulation
+    batch_thread = threading.Thread(target=b.send_posts, args=(10,))
+    stream_thread = threading.Thread(target=s.send_posts, args=(10,))
+
+    # Start both threads
+    batch_thread.start()
+    stream_thread.start()
+
+    # Wait for both threads to finish
+    batch_thread.join()
+    stream_thread.join()
